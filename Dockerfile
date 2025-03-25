@@ -1,12 +1,12 @@
-FROM ubuntu AS hw_build
-WORKDIR /BUILD
-COPY dummy_serv.c .
-RUN apt-get update
-RUN apt-get install gcc -y
-RUN gcc -o dummyserv -static dummy_serv.c
-RUN ls -lh /BUILD
+# Use an official Node.js runtime as a parent image
+FROM node:16
 
-FROM scratch AS hw_sratch
-COPY --from=hw_build /BUILD/dummyserv /dummyserv
-CMD ["/dummyserv", "8081"]
-EXPOSE 8081
+# Set the working directory inside the container
+WORKDIR /app
+
+# Expose the port 3000 to be accessible outside the container
+EXPOSE 3000
+
+# Create the server directly in the Dockerfile and run it
+CMD echo "const http = require('http'); const server = http.createServer((req, res) => { res.statusCode = 200; res.setHeader('Content-Type', 'text/plain'); res.end('Hello, World!'); }); server.listen(3000, '0.0.0.0', () => { console.log('Server running at http://0.0.0.0:3000/'); });" > server.js && node server.js
+
